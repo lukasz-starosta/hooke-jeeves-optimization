@@ -1,5 +1,5 @@
 from inspect import getmembers
-import math
+import numpy as np
 
 
 def eval_math_fn_at(fn, point):
@@ -7,7 +7,7 @@ def eval_math_fn_at(fn, point):
 
 
 def eval_math_fn(function, name_dict):
-    math_name_dict = dict(getmembers(math))
+    math_name_dict = dict(getmembers(np))
 
     # Uncomment to use custom function
     # x = name_dict['x']
