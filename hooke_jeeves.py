@@ -1,5 +1,6 @@
 import math
 import numpy as np
+from matplotlib.patches import ConnectionPatch
 
 
 def norm(v):
@@ -9,7 +10,7 @@ def norm(v):
 dim = 2
 
 
-def hooke_jeeves(fun, u, h, eps_step, eps_abs, max_iterations):
+def hooke_jeeves(fun, u, h, eps_step, eps_abs, max_iterations, plot):
     """
     Implementation of the Hooke-Jeeves algorithm
 
@@ -19,6 +20,7 @@ def hooke_jeeves(fun, u, h, eps_step, eps_abs, max_iterations):
     :param eps_step: step epsilon size constraint
     :param eps_abs: absolute epsilon size constraint
     :param max_iterations: max number of iterations
+    :param plot: the plot on which to draw progress
     :return: position of the apparent minimum, value at that point
     """
 
@@ -88,7 +90,14 @@ def hooke_jeeves(fun, u, h, eps_step, eps_abs, max_iterations):
 
             # If found a new minimum value, store it
             if fm < minimum:
-                u += du
+                # Draw a simple arrow between two points in axes coordinates
+                # within a single axes.
+                new_u = u + du
+                con = ConnectionPatch(u, new_u, 'data', 'data',
+                                      arrowstyle="->", shrinkA=2, shrinkB=2,
+                                      mutation_scale=10, fc=None)
+                plot.add_artist(con)
+                u = new_u
                 minimum = fm
                 print(f'Nowe minimum to {minimum} w punkcie: {u}')
             # We came to the end in this direction, stop

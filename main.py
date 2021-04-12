@@ -9,8 +9,10 @@ from matplotlib.ticker import LinearLocator, FormatStrFormatter
 from utils.plot.marker import mark_point
 from utils.eval_math_fn import eval_math_fn_at
 from hooke_jeeves import hooke_jeeves
+from scipy import optimize
 
 max_size = 50
+
 
 def calculate():
     # get values from input
@@ -42,9 +44,18 @@ def calculate():
     ax.clabel(CS, inline=True)
 
     f = lambda point: eval_math_fn_at(fun, point)
-    point, value = hooke_jeeves(fun=f, u=initial_approx, h=init_step, eps_step=eps_step, eps_abs=eps_abs, max_iterations=iter_c)
+    point, value = hooke_jeeves(fun=f, u=initial_approx, h=init_step, eps_step=eps_step, eps_abs=eps_abs,
+                                max_iterations=iter_c, plot=ax)
 
     print(f'Wynik: punkt: {point}, wartość: {value}')
+    scipy_result = optimize.minimize(f, initial_approx, options={'maxiter': iter_c})
+    if scipy_result.success:
+        print(
+            f'Wynik scipy.optimize.minimize: punkt: {scipy_result.x}, wartość: {scipy_result.fun}, ilość iteracji: {scipy_result.nit}')
+    else:
+        print(f'Wynik scipy.optimize.minimize: nie znaleziono minimum')
+
+    fig.canvas.mpl_connect('button_press_event', handle_click)
 
     mark_point(ax, point)
     canvas.draw()
@@ -71,15 +82,20 @@ iteration_count_label = tk.Label(master, text='Maksymalna ilość iteracji')
 
 # entry list
 fn = tk.Entry(master)
-fn.insert(index=tk.END, string='x*y')
+fn.insert(index=tk.END, string='x**2 + (y-4)**2')
+
 initial_approximation = tk.Entry(master)
-initial_approximation.insert(index=tk.END, string='[1, 3]')
+initial_approximation.insert(index=tk.END, string='[10, 30]')
+
 initial_step = tk.Entry(master)
 initial_step.insert(index=tk.END, string='1')
+
 epsilon_step = tk.Entry(master)
 epsilon_step.insert(index=tk.END, string='0.1')
+
 epsilon_abs = tk.Entry(master)
 epsilon_abs.insert(index=tk.END, string='0.1')
+
 iteration_count = tk.Entry(master)
 iteration_count.insert(index=tk.END, string='20')
 
@@ -126,6 +142,16 @@ canvas.get_tk_widget().pack(side=tk.TOP, fill=tk.BOTH, expand=1)
 
 # creating the Matplotlib toolbar
 toolbar = NavigationToolbar2Tk(canvas, master)
+fxy = tk.StringVar()
+
+
+def handle_click(event):
+    fxy.set(
+        f'f({round(event.xdata, 3)},{round(event.ydata, 3)}) = {round(eval_math_fn_at(fn.get(), [event.xdata, event.ydata]), 3)}')
+
+
+fxy_label = tk.Label(toolbar, textvariable=fxy)
+fxy_label.pack(side="right")
 toolbar.update()
 
 # placing the toolbar on the Tkinter window
