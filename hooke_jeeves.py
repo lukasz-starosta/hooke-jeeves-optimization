@@ -65,7 +65,7 @@ def hooke_jeeves(fun, u, h, eps_step, eps_abs, max_iterations, plot):
 
         # Finally update u by adding the du
         # Value at this point equals minimum
-        print(f'Kierunek {du} w punkcie: {u}')
+        print(f'Kierunek {du} w punkcie: {u}, iter: {i}')
         u += du
 
         # Check conditions
@@ -74,6 +74,7 @@ def hooke_jeeves(fun, u, h, eps_step, eps_abs, max_iterations, plot):
         if norm(du) == 0:
             if h < eps_step:
                 # Return the best approximation of minimum
+                print(f'Znaleziono minimum w {u}: {minimum}, iter: {i}')
                 return u, minimum
             else:
                 # If h is too large, divide it by 2 and return to the start of the for loop
@@ -87,7 +88,6 @@ def hooke_jeeves(fun, u, h, eps_step, eps_abs, max_iterations, plot):
         while k < max_iterations:
             fm = fun(u + du)
             k += 1
-
             # If found a new minimum value, store it
             if fm < minimum:
                 # Draw a simple arrow between two points in axes coordinates
@@ -99,7 +99,7 @@ def hooke_jeeves(fun, u, h, eps_step, eps_abs, max_iterations, plot):
                 plot.add_artist(con)
                 u = new_u
                 minimum = fm
-                print(f'Nowe minimum to {minimum} w punkcie: {u}')
+                print(f'Nowe minimum to {minimum} w punkcie: {u}, iter: {k}')
             # We came to the end in this direction, stop
             else:
                 break
@@ -110,7 +110,7 @@ def hooke_jeeves(fun, u, h, eps_step, eps_abs, max_iterations, plot):
         # distance between previous and current approx of minimum is less than eps_abs
         if (k < max_iterations and norm(u - u0) < eps_step) and min0 - minimum < eps_abs:
             # Done, return the minimum
-            print(f'Znaleziono minimum w {u}: {minimum}')
+            print(f'Znaleziono minimum w {u}: {minimum}, iter: {i}')
             return u, minimum
 
     # Zero vector - approx, no value
