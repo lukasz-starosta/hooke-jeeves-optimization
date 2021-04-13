@@ -71,7 +71,7 @@ def hooke_jeeves(fun, u, h, eps_step, eps_abs, max_iterations, plot):
         # Check conditions
         # If no change gave a better approx of minimum (norm(du) == 0)
         print('------------ Sprawdzanie warunków ----------')
-        if norm(du) == 0:
+        if du[0] == 0 and du[1] == 0:
             if h < eps_step:
                 # Return the best approximation of minimum
                 print(f'Znaleziono minimum w {u}: {minimum}, iter: {i}')
